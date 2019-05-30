@@ -14,8 +14,7 @@ const beginning = readme.split(separator)[0];
 const apiDoc = jsdoc2md.renderSync({
     'example-lang': 'javascript',
     files: [
-        'src/BotService.js',
-        'src/botServiceQuickReplyPatch.js'
+        'src/Intercom.js'
     ]
 });
 

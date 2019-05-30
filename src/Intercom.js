@@ -25,6 +25,7 @@ class Intercom {
      * @param {object} options
      * @param {string} options.botAdminId - id of the bot user in Intercom
      * @param {string} options.intercomAppToken - OAUTH token to authorize Intercom requests
+     * @param {string} [options.passThreadAction] - trigger this action for pass thread event
      * @param {Function} [options.requestLib] - request library replacement for testing
      * @param {string} [options.uri] - override intercom URL
      * @param {console} [senderLogger] - optional console like chat logger
@@ -126,7 +127,8 @@ class Intercom {
 
             if (handover) {
                 if (handover.assigned_to.id !== this._options.botAdminId
-                    || handover.author.id === this._options.botAdminId) {
+                    || handover.author.id === this._options.botAdminId
+                    || !this._options.passThreadAction) {
                     // ignore it
 
                     return [];
@@ -143,7 +145,8 @@ class Intercom {
         let req;
 
         if (isHandover) {
-            req = Request.passThread(senderId, this._options.botAdminId, {}, timestamp);
+            const action = this._options.passThreadAction;
+            req = Request.postBack(senderId, action, {}, null, {}, timestamp);
         } else {
             req = Request.text(senderId, message, timestamp);
         }

@@ -1,6 +1,6 @@
 {
   "name": "wingbot-intercom",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Intercom integration for wingbot.ai",
   "main": "src/main.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "test:unit": "mocha ./test/**/*.test.js",
     "test:unit:watch": "npm run test:unit -- --watch",
     "test:coverage": "nyc --reporter=html mocha --opts ./test/mocha.opts ./test && nyc report",
-    "test:coverage:threshold": "nyc check-coverage --lines 60 --functions 60 --branches 40",
+    "test:coverage:threshold": "nyc check-coverage --lines 60 --functions 60 --branches 38",
     "test:lint": "eslint ./src/**/*.js ./bin/**/*.js ./test/**/*.js ",
     "doc": "node ./bin/makeApiDoc.js"
   },

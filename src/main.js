@@ -3,11 +3,10 @@
  */
 'use strict';
 
-const BotService = require('./Intercom');
-const BotServiceSender = require('./IntercomSender');
+const Intercom = require('./Intercom');
+const IntercomSender = require('./IntercomSender');
 
 module.exports = {
-    BotService,
-    Botservice: BotService,
-    BotServiceSender
+    Intercom,
+    IntercomSender
 };

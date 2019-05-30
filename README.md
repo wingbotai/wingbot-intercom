@@ -1,108 +1,129 @@
-# Microsoft BotService plugin for wingbot.ai
+# Intercom connector for wingbot.ai bot
+
+It's easy now to use the wingbot.ai as an automation backend for Intercom.
+
+![wingbot bot in the Intercom](wingbot-intercom.png)
+
+## Setting up the Intercom
+
+1. **Create an Intercom application**
+
+    you'll get an access token, which you'll be able to use as `intercomAppToken`.
+
+2. **Set up the webhook**
+
+    Subscribe the bot to following channels
+
+    - `conversation.user.created`
+    - `conversation.user.replied`
+    - `conversation.admin.assigned`
+
+3. **Create a Bot admin user**
+
+    You'll use an ID of the user as a `botAdminId` param.
+
+4. **Make additional setup**
+
+    These steps are required to make the bot working properly:
+
+    - set the Bot admin user as a default assignee
+    - turn off the work hours
+    - set up the welcome message for all chat users
+
+5. **Use team (or admin user) ID as a Handover app ID**
+
+    To pass thread to team or user use it's ID as an application ID in pass thread command.
+
+## Setting up the bot
+
+And don't forget to **disable `autoTyping` and `autoSeen` feature and all handover related interactions.**
 
 ```javascript
 const { Router, Bot } = require('wingbot');
-const { BotService } = require('wingbot-intercom');
+const { Intercom } = require('wingbot-intercom');
 
 const bot = new Bot();
 
 const processor = new Processor(bot);
 
-const bs = new BotService(processor, {
-    appId: '123',
-    appSecret: '456'
+const intercom = new Intercom(processor, {
+    botAdminId: '123',
+    intercomAppToken: '456'
 });
 
 // the route
 module.exports.bot = async (req, res) => {
     const { body, headers } = req;
 
-    await bs.verifyRequest(body, headers);
+    await intercom.verifyRequest(body, headers);
 
-    await bs.processEvent(body);
+    await intercom.processEvent(body);
 };
 ```
 
-## Using backchannel for sending postBacks to the bot
-
-```javascript
-const directLine = new DirectLine();
-directLine.postActivity({
-    type:'event',
-    name:'postBack',
-    from:{ id: botserviceUserId },
-    value:{ action: 'action-path', data: {/* optional */} }
-});
-```
 -----------------
 
 # API
 ## Classes
 
 <dl>
-<dt><a href="#BotService">BotService</a></dt>
+<dt><a href="#Intercom">Intercom</a></dt>
 <dd><p>BotService connector for wingbot.ai</p>
 </dd>
 </dl>
 
-## Functions
+## Typedefs
 
 <dl>
-<dt><a href="#botServiceQuickReplyPatch">botServiceQuickReplyPatch(bot, [startAction])</a> ⇒ <code>function</code></dt>
-<dd><p>Patch, which solves problem with BotFramework. Always, when conversationId is changed,
-middleware looks for matching quick replies from first text request. When there are some,
-it redirects user</p>
-</dd>
+<dt><a href="#Processor">Processor</a> : <code>Object</code></dt>
+<dd></dd>
 </dl>
 
-<a name="BotService"></a>
+<a name="Intercom"></a>
 
-## BotService
+## Intercom
 BotService connector for wingbot.ai
 
-**Kind**: global class
+**Kind**: global class  
 
-* [BotService](#BotService)
-    * [new BotService(processor, options, [senderLogger])](#new_BotService_new)
-    * [.processEvent(body)](#BotService+processEvent) ⇒ <code>Promise.&lt;Array.&lt;{message:Object, pageId:string}&gt;&gt;</code>
-    * [.verifyRequest(body, headers)](#BotService+verifyRequest) ⇒ <code>Promise</code>
+* [Intercom](#Intercom)
+    * [new Intercom(processor, options, [senderLogger])](#new_Intercom_new)
+    * [.processEvent(body)](#Intercom+processEvent) ⇒ <code>Promise.&lt;Array.&lt;{message:object, pageId:string}&gt;&gt;</code>
+    * [.verifyRequest(body, headers)](#Intercom+verifyRequest) ⇒ <code>Promise</code>
 
-<a name="new_BotService_new"></a>
+<a name="new_Intercom_new"></a>
 
-### new BotService(processor, options, [senderLogger])
-
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| processor | <code>Processor</code> |  | wingbot Processor instance |
-| options | <code>Object</code> |  |  |
-| options.appId | <code>string</code> |  | botservice client id |
-| options.appSecret | <code>string</code> |  | botservice client secret |
-| [options.grantType] | <code>string</code> |  | boservice authentication grant_type |
-| [options.scope] | <code>string</code> |  | boservice authentication scope |
-| [options.uri] | <code>string</code> |  | boservice authentication uri |
-| [options.welcomeAction] | <code>string</code> \| <code>null</code> | <code>&quot;&#x27;start&#x27;&quot;</code> | conversation start emits postback |
-| [options.requestLib] | <code>function</code> |  | request library replacement for testing |
-| [options.overPublic] | <code>string</code> |  | override public key for testing |
-| [senderLogger] | <code>console</code> |  | optional console like chat logger |
-
-<a name="BotService+processEvent"></a>
-
-### botService.processEvent(body) ⇒ <code>Promise.&lt;Array.&lt;{message:Object, pageId:string}&gt;&gt;</code>
-Process Facebook request
-
-**Kind**: instance method of [<code>BotService</code>](#BotService)
-**Returns**: <code>Promise.&lt;Array.&lt;{message:Object, pageId:string}&gt;&gt;</code> - - unprocessed events
+### new Intercom(processor, options, [senderLogger])
 
 | Param | Type | Description |
 | --- | --- | --- |
-| body | <code>bs.Activity</code> | event body |
+| processor | [<code>Processor</code>](#Processor) | wingbot Processor instance |
+| options | <code>object</code> |  |
+| options.botAdminId | <code>string</code> | id of the bot user in Intercom |
+| options.intercomAppToken | <code>string</code> | OAUTH token to authorize Intercom requests |
+| [options.passThreadAction] | <code>string</code> | trigger this action for pass thread event |
+| [options.requestLib] | <code>function</code> | request library replacement for testing |
+| [options.uri] | <code>string</code> | override intercom URL |
+| [senderLogger] | <code>console</code> | optional console like chat logger |
 
-<a name="BotService+verifyRequest"></a>
+<a name="Intercom+processEvent"></a>
 
-### botService.verifyRequest(body, headers) ⇒ <code>Promise</code>
+### intercom.processEvent(body) ⇒ <code>Promise.&lt;Array.&lt;{message:object, pageId:string}&gt;&gt;</code>
+Process Facebook request
+
+**Kind**: instance method of [<code>Intercom</code>](#Intercom)  
+**Returns**: <code>Promise.&lt;Array.&lt;{message:object, pageId:string}&gt;&gt;</code> - - unprocessed events  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| body | <code>object</code> | event body |
+
+<a name="Intercom+verifyRequest"></a>
+
+### intercom.verifyRequest(body, headers) ⇒ <code>Promise</code>
 Verify Facebook webhook event
 
-**Kind**: instance method of [<code>BotService</code>](#BotService)
+**Kind**: instance method of [<code>Intercom</code>](#Intercom)  
 **Throws**:
 
 - <code>Error</code> when authorization token is invalid or missing
@@ -110,38 +131,15 @@ Verify Facebook webhook event
 
 | Param | Type | Description |
 | --- | --- | --- |
-| body | <code>Object</code> | parsed request body |
-| headers | <code>Object</code> | request headers |
+| body | <code>string</code> \| <code>Buffer</code> | parsed request body |
+| headers | <code>object</code> | request headers |
 
-<a name="botServiceQuickReplyPatch"></a>
+<a name="Processor"></a>
 
-## botServiceQuickReplyPatch(bot, [startAction]) ⇒ <code>function</code>
-Patch, which solves problem with BotFramework. Always, when conversationId is changed,
-middleware looks for matching quick replies from first text request. When there are some,
-it redirects user
+## Processor : <code>Object</code>
+**Kind**: global typedef  
 
-**Kind**: global function
-**Returns**: <code>function</code> - - the middleware
+| Param | Type |
+| --- | --- |
+| processMessage | <code>function</code> | 
 
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| bot | <code>Router</code> |  | chatbot itself |
-| [startAction] | <code>string</code> | <code>&quot;start&quot;</code> | start action to fetch quick replies |
-
-**Example**
-```javascript
-const { Router } = require('wingbot');
-const { botServiceQuickReplyPatch } = require('wingbot-botservice');
-
-const bot = new Router();
-
-// attach as first
-const patch = botServiceQuickReplyPatch(bot, 'start');
-bot.use(patch);
-
-bot.use('start', (req, res) => {
-    res.text('Hello', {
-        goto: 'Go to'
-    });
-});
-```

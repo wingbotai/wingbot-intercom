@@ -41,7 +41,7 @@ class IntercomSender extends ReturnSender {
                 type: 'admin',
                 admin_id: botAdminId,
                 message_type: 'assignment',
-                assignee_id: payload.target_app_id
+                assignee_id: `${payload.target_app_id}`
             };
         }
 
